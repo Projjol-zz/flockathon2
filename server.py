@@ -7,8 +7,6 @@ import time
 from datetime import datetime
 from dateutil import parser
 from flask import Flask, request, jsonify, json, render_template
-from pyflock import FlockClient, verify_event_token
-from pyflock import Message, SendAs, Attachment, Views, WidgetView, HtmlView, ImageView, Image, Download, Button, OpenWidgetAction, OpenBrowserAction, SendToAppAction
 
 app = Flask(__name__)
 
