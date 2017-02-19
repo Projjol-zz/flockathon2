@@ -151,7 +151,7 @@ def send_message():
         # print res.fetchone()20
         print '*'*20
     # payload = {"to": chat_id, "token":creator_token, "attachments": "[{"views":{"widget":{"src":"http://b63e8435.ngrok.io/user_count","width": 200,"height": 40}}}]"}
-    payload = {"to":chat_id,"token":creator_token,"attachments":"[{\"views\":{\"widget\":{\"src\":\"http://b63e8435.ngrok.io/user_count?message_count=%s\",\"width\": 200,\"height\": 40}}}]" %message_count}
+    payload = {"to":chat_id,"token":creator_token,"attachments":"[{\"views\":{\"widget\":{\"src\":\"https://t-trial.herokuapp.com/user_count?message_count=%s\",\"width\": 200,\"height\": 40}}}]" %message_count}
     print 'befre req'
     res = requests.get('https://api.flock.co/v1/chat.sendMessage', params=payload)
     print 'after req'
