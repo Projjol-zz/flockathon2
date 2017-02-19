@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Thread</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="sender_or_info me" id="conversation_Listener_7" widgetid="conversation_Listener_7">
+        <div class="picWrapper">
+            <div class="displayPic" title="">
+                <img dojoattachpoint="_pic" src="{{data_dict['creator']['profileImage']}}" class="senderOpenImage">
+            </div>
+            <div>
+                <div dojoattachpoint="_senderName" class="chat_message_sender">{{data_dict['creator']['firstName']}} {{data_dict['creator']['lastName']}}</div>
+                <span style="float: right; z-index:15000;">{{data_dict['creator']['timestamp']}}</span>
+            </div>
+        </div>
+        <div dojoattachpoint="_children" class="senderChild">
+            <div  id="uniqName_12_10" widgetid="uniqName_12_10">
+                <!-- <span dojoattachpoint="_minuteSpan" class="chat_message_time">12:24 PM</span> -->
+                <div dojoattachpoint="_children" class="minute_child">
+                    <div class="chat_message chat_message_me" id="uniqName_12_11" widgetid="uniqName_12_11">
+                        <div style="padding: 0.5em;">{{data_dict['creator']['text']}}</div>                  
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <!-- loop code -->
+    {% for message in data_dict['creator']['previous_messages'] %}
+    <div class="sender_or_info me" id="conversation_Listener_7" widgetid="conversation_Listener_7">
+        <div class="picWrapper">
+            <div class="displayPic" title="">
+                <img dojoattachpoint="_pic" src="{{message[0]}}" class="senderOpenImage">
+            </div>
+            <div>
+                <div dojoattachpoint="_senderName" class="chat_message_sender">{{message[2]}} {{message[3]}}</div>
+                <span style="float: right; z-index:15000; color: grey">{{message[5] | datetimefilter}}</span>
+            </div>
+        </div>
+        <div dojoattachpoint="_children" class="senderChild">
+            <div  id="uniqName_12_10" widgetid="uniqName_12_10">
+                <!-- <span dojoattachpoint="_minuteSpan" class="chat_message_time">12:24 PM</span> -->
+                <div dojoattachpoint="_children" class="minute_child">
+                    <div class="chat_message chat_message_me" id="uniqName_12_11" widgetid="uniqName_12_11">
+                        {% if '#' in message[4]%}
+                        {% for item in message[4].split() %}
+                        {% if '#' in item %}
+                        <div style="padding: 0.5em;">{{" ".join(message[4].split()[:message[4].split().index(item)])}} <a target= "_blank" href="https://github.com/golang/go/issues/{{item.replace('#','')}}">{{item}}</a> {{" ".join(message[4].split()[message[4].split().index(item)+1:])}}</div>
+                        {% endif %}
+                        {% endfor %}
+                        {% else %}
+                        <div style="padding: 0.5em;">{{message[4]}}</div>
+                        {% endif %}       
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    <!-- end loop code -->
+    <div class="sender_or_info me" id="conversation_Listener_7" widgetid="conversation_Listener_7">
+        <div class="picWrapper">
+            <div class="displayPic" title="">
+                <img dojoattachpoint="_pic" src="{{data_dict['invoker']['invoker_profile_image']}}" class="senderOpenImage">
+            </div>
+            <div >
+                <input type="text" name="" id="flock-enter" style=" padding-left: 5px; height: 32px; width: 230px; border-radius: 13px; border-color: grey;background-color: white;">
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+    document.getElementById('flock-enter').onkeydown = function(e){
+    if(e.keyCode == 13){
+        // alert('hi guiz');
+        var msg_text = document.getElementById('flock-enter').value;
+        var invoker_token = "{{data_dict['invoker']['invoker_token']}}"
+        var fname = "{{data_dict['invoker']['invoker_first_name']}}"
+        var lname = "{{data_dict['invoker']['invoker_last_name']}}"
+        var profile_image = "{{data_dict['invoker']['invoker_profile_image']}}"
+        var parent_msg_id = "{{data_dict['creator']['parent_msg_id']}}"
+        var msg_timestamp = Date();
+        console.log('yolo');
+        $.ajax({
+            url: '/save_message',
+            data: {"msg_txt":msg_text, "invoker_token":invoker_token, "fname":fname, 'lname': lname, 'profile_image': profile_image, 'parent_msg_id':parent_msg_id, 'msg_timestamp': msg_timestamp},
+            type: 'POST',
+            success: function(response) {
+                console.log(response);
+                $.ajax({
+                    url: '/send_message',
+                    data: {"chat_id":"{{data_dict['creator']['chat_id']}}", "creator_token":"{{data_dict['creator']['creator_token']}}", "parent_msg_id":"{{data_dict['creator']['parent_msg_id']}}"},
+                    type: 'POST'
+                });
+                window.location.reload();
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+   }
+};
+</script>
+</html>
